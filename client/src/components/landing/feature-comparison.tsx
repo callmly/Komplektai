@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, Fragment } from "react";
 import { Check, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -103,8 +103,8 @@ export function FeatureComparison({
               </thead>
               <tbody>
                 {sortedGroups.map((group, groupIdx) => (
-                  <>
-                    <tr key={`group-${group.id}`} className="border-b bg-muted/30">
+                  <Fragment key={`group-${group.id}`}>
+                    <tr className="border-b bg-muted/30">
                       <td
                         colSpan={sortedPlans.length + 1}
                         className="px-6 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground"
@@ -149,7 +149,7 @@ export function FeatureComparison({
                         })}
                       </tr>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>

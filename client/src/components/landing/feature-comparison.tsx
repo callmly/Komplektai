@@ -93,7 +93,7 @@ export function FeatureComparison({
                     <th
                       key={plan.id}
                       className={cn(
-                        "px-6 py-4 text-center font-semibold",
+                        "w-1/4 px-6 py-4 text-center font-semibold",
                         plan.isHighlighted && "bg-primary/5"
                       )}
                     >

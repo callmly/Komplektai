@@ -207,6 +207,22 @@ export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, creat
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
 
+// ============ CONTENT BLOCKS ============
+export const contentBlocks = pgTable("content_blocks", {
+  id: serial("id").primaryKey(),
+  titleLt: varchar("title_lt", { length: 150 }),
+  contentLt: text("content_lt"),
+  isHtml: boolean("is_html").default(false),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertContentBlockSchema = createInsertSchema(contentBlocks).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertContentBlock = z.infer<typeof insertContentBlockSchema>;
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+
 // ============ LEAD FORM VALIDATION ============
 export const leadFormSchema = z.object({
   planId: z.number(),

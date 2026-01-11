@@ -10,6 +10,7 @@ import {
   planFeatures,
   siteContent,
   leads,
+  contentBlocks,
   type Plan,
   type InsertPlan,
   type OptionGroup,
@@ -28,6 +29,8 @@ import {
   type InsertSiteContent,
   type Lead,
   type InsertLead,
+  type ContentBlock,
+  type InsertContentBlock,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -82,6 +85,14 @@ export interface IStorage {
   getLeads(): Promise<Lead[]>;
   getLead(id: number): Promise<Lead | undefined>;
   createLead(lead: InsertLead): Promise<Lead>;
+
+  // Content Blocks
+  getContentBlocks(): Promise<ContentBlock[]>;
+  getActiveContentBlocks(): Promise<ContentBlock[]>;
+  getContentBlock(id: number): Promise<ContentBlock | undefined>;
+  createContentBlock(block: InsertContentBlock): Promise<ContentBlock>;
+  updateContentBlock(id: number, block: Partial<InsertContentBlock>): Promise<ContentBlock | undefined>;
+  deleteContentBlock(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -273,6 +284,42 @@ export class DatabaseStorage implements IStorage {
   async createLead(lead: InsertLead): Promise<Lead> {
     const [newLead] = await db.insert(leads).values(lead).returning();
     return newLead;
+  }
+
+  // Content Blocks
+  async getContentBlocks(): Promise<ContentBlock[]> {
+    return db.select().from(contentBlocks).orderBy(contentBlocks.sortOrder);
+  }
+
+  async getActiveContentBlocks(): Promise<ContentBlock[]> {
+    return db
+      .select()
+      .from(contentBlocks)
+      .where(eq(contentBlocks.isActive, true))
+      .orderBy(contentBlocks.sortOrder);
+  }
+
+  async getContentBlock(id: number): Promise<ContentBlock | undefined> {
+    const [block] = await db.select().from(contentBlocks).where(eq(contentBlocks.id, id));
+    return block;
+  }
+
+  async createContentBlock(block: InsertContentBlock): Promise<ContentBlock> {
+    const [newBlock] = await db.insert(contentBlocks).values(block).returning();
+    return newBlock;
+  }
+
+  async updateContentBlock(id: number, block: Partial<InsertContentBlock>): Promise<ContentBlock | undefined> {
+    const [updated] = await db
+      .update(contentBlocks)
+      .set({ ...block, updatedAt: new Date() })
+      .where(eq(contentBlocks.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteContentBlock(id: number): Promise<void> {
+    await db.delete(contentBlocks).where(eq(contentBlocks.id, id));
   }
 }
 

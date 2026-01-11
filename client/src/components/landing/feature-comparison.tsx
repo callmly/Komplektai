@@ -110,7 +110,16 @@ export function FeatureComparison({
                         colSpan={sortedPlans.length + 1}
                         className="px-6 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground"
                       >
-                        {group.titleLt}
+                        <span className="inline-flex items-center">
+                          {group.titleLt}
+                          {group.tooltipEnabled && (
+                            <InfoTooltip
+                              text={group.tooltipText}
+                              link={group.tooltipLink}
+                              image={group.tooltipImage}
+                            />
+                          )}
+                        </span>
                       </td>
                     </tr>
                     {getFeaturesByGroup(group.id).map((feature, featureIdx) => (
@@ -176,7 +185,16 @@ export function FeatureComparison({
                 className="rounded-xl border bg-background px-4"
               >
                 <AccordionTrigger className="py-4 text-base font-semibold hover:no-underline">
-                  {group.titleLt}
+                  <span className="inline-flex items-center">
+                    {group.titleLt}
+                    {group.tooltipEnabled && (
+                      <InfoTooltip
+                        text={group.tooltipText}
+                        link={group.tooltipLink}
+                        image={group.tooltipImage}
+                      />
+                    )}
+                  </span>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 pb-4">

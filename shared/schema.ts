@@ -102,6 +102,10 @@ export const featureGroups = pgTable("feature_groups", {
   id: serial("id").primaryKey(),
   titleLt: varchar("title_lt", { length: 100 }).notNull(),
   sortOrder: integer("sort_order").default(0),
+  tooltipEnabled: boolean("tooltip_enabled").default(false),
+  tooltipText: text("tooltip_text"),
+  tooltipLink: text("tooltip_link"),
+  tooltipImage: text("tooltip_image"),
 });
 
 export const featureGroupsRelations = relations(featureGroups, ({ many }) => ({

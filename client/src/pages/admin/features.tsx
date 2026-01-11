@@ -48,6 +48,10 @@ import type { Plan, FeatureGroup, Feature, PlanFeature } from "@shared/schema";
 const groupSchema = z.object({
   titleLt: z.string().min(1, "Pavadinimas privalomas"),
   sortOrder: z.coerce.number().default(0),
+  tooltipEnabled: z.boolean().default(false),
+  tooltipText: z.string().optional(),
+  tooltipLink: z.string().optional(),
+  tooltipImage: z.string().optional(),
 });
 
 const featureSchema = z.object({
@@ -138,7 +142,14 @@ export default function AdminFeatures() {
 
   const groupForm = useForm<GroupFormData>({
     resolver: zodResolver(groupSchema),
-    defaultValues: { titleLt: "", sortOrder: 0 },
+    defaultValues: { 
+      titleLt: "", 
+      sortOrder: 0,
+      tooltipEnabled: false,
+      tooltipText: "",
+      tooltipLink: "",
+      tooltipImage: "",
+    },
   });
 
   const featureForm = useForm<FeatureFormData>({
@@ -229,7 +240,14 @@ export default function AdminFeatures() {
   const openGroupDialog = (group?: FeatureGroup) => {
     if (group) {
       setEditingGroup(group);
-      groupForm.reset({ titleLt: group.titleLt, sortOrder: group.sortOrder || 0 });
+      groupForm.reset({ 
+        titleLt: group.titleLt, 
+        sortOrder: group.sortOrder || 0,
+        tooltipEnabled: group.tooltipEnabled || false,
+        tooltipText: group.tooltipText || "",
+        tooltipLink: group.tooltipLink || "",
+        tooltipImage: group.tooltipImage || "",
+      });
     } else {
       setEditingGroup(null);
       groupForm.reset();
@@ -478,6 +496,75 @@ export default function AdminFeatures() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={groupForm.control}
+                name="tooltipEnabled"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-3 rounded-lg border p-3">
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="flex-1">
+                      <FormLabel className="flex items-center gap-2">
+                        <Info className="h-4 w-4" />
+                        Rodyti paaiškinimą
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              {groupForm.watch("tooltipEnabled") && (
+                <div className="space-y-3 rounded-lg border p-3 bg-muted/30">
+                  <FormField
+                    control={groupForm.control}
+                    name="tooltipText"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Paaiškinimo tekstas</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Įveskite paaiškinimą..." 
+                            {...field} 
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={groupForm.control}
+                    name="tooltipLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nuoroda (neprivaloma)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="https://..." 
+                            {...field} 
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={groupForm.control}
+                    name="tooltipImage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Paveikslėlio URL (neprivaloma)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="https://..." 
+                            {...field} 
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"

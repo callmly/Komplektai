@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "./info-tooltip";
 import type { Plan, FeatureGroup, Feature, PlanFeature } from "@shared/schema";
 
 interface FeatureComparisonProps {
@@ -121,7 +122,16 @@ export function FeatureComparison({
                         )}
                       >
                         <td className="sticky left-0 z-10 bg-inherit px-6 py-4 font-medium">
-                          {feature.labelLt}
+                          <span className="inline-flex items-center">
+                            {feature.labelLt}
+                            {feature.tooltipEnabled && (
+                              <InfoTooltip
+                                text={feature.tooltipText}
+                                link={feature.tooltipLink}
+                                image={feature.tooltipImage}
+                              />
+                            )}
+                          </span>
                         </td>
                         {sortedPlans.map((plan) => {
                           const value = getFeatureValue(feature.id, plan.id);
@@ -175,7 +185,16 @@ export function FeatureComparison({
                         key={feature.id}
                         className="rounded-lg border bg-muted/20 p-4"
                       >
-                        <div className="mb-3 font-medium">{feature.labelLt}</div>
+                        <div className="mb-3 font-medium inline-flex items-center">
+                          {feature.labelLt}
+                          {feature.tooltipEnabled && (
+                            <InfoTooltip
+                              text={feature.tooltipText}
+                              link={feature.tooltipLink}
+                              image={feature.tooltipImage}
+                            />
+                          )}
+                        </div>
                         <div className="grid grid-cols-3 gap-2">
                           {sortedPlans.map((plan) => {
                             const value = getFeatureValue(feature.id, plan.id);

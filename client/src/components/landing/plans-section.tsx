@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "./info-tooltip";
 import type { Plan, OptionGroup, Option } from "@shared/schema";
 import type { PlanConfig } from "@/pages/landing";
 
@@ -199,8 +200,19 @@ function PlanCard({ plan, optionGroups, options, onGetQuote }: PlanCardProps) {
           </div>
         </div>
 
+        {!isExpanded && (
+          <div className="mb-6 flex-1 space-y-3">
+            {plan.descriptionLt?.split("\n").map((line, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>{line}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <Button
-          className="w-full gap-2"
+          className="w-full gap-2 mt-auto"
           variant={plan.isHighlighted ? "default" : "outline"}
           onClick={() => setIsExpanded(!isExpanded)}
           data-testid={`button-select-plan-${plan.id}`}
@@ -234,7 +246,16 @@ function PlanCard({ plan, optionGroups, options, onGetQuote }: PlanCardProps) {
                           className="flex items-center justify-between gap-4 rounded-lg border bg-muted/30 p-3"
                         >
                           <div className="flex-1">
-                            <div className="font-medium">{option.labelLt}</div>
+                            <div className="font-medium inline-flex items-center">
+                              {option.labelLt}
+                              {option.tooltipEnabled && (
+                                <InfoTooltip
+                                  text={option.tooltipText}
+                                  link={option.tooltipLink}
+                                  image={option.tooltipImage}
+                                />
+                              )}
+                            </div>
                             <div className="text-sm text-muted-foreground">
                               {formatPrice(option.unitPriceCents)} € / vnt.
                             </div>
@@ -298,7 +319,16 @@ function PlanCard({ plan, optionGroups, options, onGetQuote }: PlanCardProps) {
                               htmlFor={`switch-${option.id}`}
                               className="flex flex-1 cursor-pointer items-center justify-between"
                             >
-                              <span>{option.labelLt}</span>
+                              <span className="inline-flex items-center">
+                                {option.labelLt}
+                                {option.tooltipEnabled && (
+                                  <InfoTooltip
+                                    text={option.tooltipText}
+                                    link={option.tooltipLink}
+                                    image={option.tooltipImage}
+                                  />
+                                )}
+                              </span>
                               <span className="text-sm text-muted-foreground">
                                 +{formatPrice(option.unitPriceCents)} €
                               </span>
@@ -334,7 +364,16 @@ function PlanCard({ plan, optionGroups, options, onGetQuote }: PlanCardProps) {
                             htmlFor={`addon-${option.id}`}
                             className="flex flex-1 cursor-pointer items-center justify-between"
                           >
-                            <span>{option.labelLt}</span>
+                            <span className="inline-flex items-center">
+                              {option.labelLt}
+                              {option.tooltipEnabled && (
+                                <InfoTooltip
+                                  text={option.tooltipText}
+                                  link={option.tooltipLink}
+                                  image={option.tooltipImage}
+                                />
+                              )}
+                            </span>
                             <span className="text-sm text-muted-foreground">
                               +{formatPrice(option.unitPriceCents)} €
                             </span>
@@ -371,17 +410,6 @@ function PlanCard({ plan, optionGroups, options, onGetQuote }: PlanCardProps) {
             </div>
           </div>
         </div>
-
-        {!isExpanded && (
-          <div className="mt-6 space-y-3">
-            {plan.descriptionLt?.split("\n").map((line, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span>{line}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </CardContent>
     </Card>
   );

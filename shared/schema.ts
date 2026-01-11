@@ -55,6 +55,10 @@ export const options = pgTable("options", {
   defaultQty: integer("default_qty").default(1),
   isDefault: boolean("is_default").default(false),
   sortOrder: integer("sort_order").default(0),
+  tooltipEnabled: boolean("tooltip_enabled").default(false),
+  tooltipText: text("tooltip_text"),
+  tooltipLink: text("tooltip_link"),
+  tooltipImage: text("tooltip_image"),
 });
 
 export const optionsRelations = relations(options, ({ one, many }) => ({
@@ -114,6 +118,10 @@ export const features = pgTable("features", {
   labelLt: varchar("label_lt", { length: 150 }).notNull(),
   valueType: varchar("value_type", { length: 20 }).notNull().default("boolean"), // "boolean" | "text"
   sortOrder: integer("sort_order").default(0),
+  tooltipEnabled: boolean("tooltip_enabled").default(false),
+  tooltipText: text("tooltip_text"),
+  tooltipLink: text("tooltip_link"),
+  tooltipImage: text("tooltip_image"),
 });
 
 export const featuresRelations = relations(features, ({ one, many }) => ({

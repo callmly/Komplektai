@@ -7,6 +7,7 @@ import { FeatureComparison } from "@/components/landing/feature-comparison";
 import { ContentBlocksSection } from "@/components/landing/content-blocks";
 import { Footer } from "@/components/landing/footer";
 import { LeadModal } from "@/components/landing/lead-modal";
+import { ScrollToTop } from "@/components/landing/scroll-to-top";
 import type { Plan, OptionGroup, Option, FeatureGroup, Feature, PlanFeature, SiteContent } from "@shared/schema";
 
 export type OptionWithGroup = Option & { group: OptionGroup };
@@ -92,7 +93,10 @@ export default function LandingPage() {
         config={planConfig}
         options={optionsData?.options || []}
         optionGroups={optionsData?.groups || []}
+        thankYouContent={getContent("thankYou")}
       />
+      
+      <ScrollToTop />
     </div>
   );
 }

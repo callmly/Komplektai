@@ -62,7 +62,7 @@ export function PlansSection({
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-3 items-start">
           {sortedPlans.map((plan) => (
             <PlanCard
               key={plan.id}

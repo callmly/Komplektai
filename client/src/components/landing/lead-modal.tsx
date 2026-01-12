@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, X, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { Plan, Option, OptionGroup } from "@shared/schema";
+import type { Plan, Option, OptionGroup, SiteContent } from "@shared/schema";
 import type { PlanConfig } from "@/pages/landing";
 
 const formSchema = z.object({
@@ -45,6 +45,7 @@ interface LeadModalProps {
   config: PlanConfig | null;
   options: Option[];
   optionGroups: OptionGroup[];
+  thankYouContent?: SiteContent;
 }
 
 export function LeadModal({
@@ -54,8 +55,10 @@ export function LeadModal({
   config,
   options,
   optionGroups,
+  thankYouContent,
 }: LeadModalProps) {
   const { toast } = useToast();
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -106,14 +109,9 @@ export function LeadModal({
       return apiRequest("POST", "/api/leads", payload);
     },
     onSuccess: () => {
-      toast({
-        title: "Užklausa išsiųsta!",
-        description: "Su jumis susisieksime artimiausiu metu.",
-      });
-      form.reset();
-      onClose();
+      setShowSuccess(true);
     },
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "Klaida",
         description: "Nepavyko išsiųsti užklausos. Bandykite dar kartą.",
@@ -122,14 +120,45 @@ export function LeadModal({
     },
   });
 
+  const handleClose = () => {
+    setShowSuccess(false);
+    form.reset();
+    onClose();
+  };
+
   const onSubmit = (data: FormData) => {
     submitMutation.mutate(data);
   };
 
   if (!plan || !config) return null;
 
+  if (showSuccess) {
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <DialogContent className="max-w-md text-center">
+          <div className="flex flex-col items-center py-6">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <CheckCircle2 className="h-8 w-8 text-primary" />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl">
+                {thankYouContent?.headingLt || "Ačiū už užklausą!"}
+              </DialogTitle>
+              <DialogDescription className="mt-2 text-base">
+                {thankYouContent?.bodyLt || "Su jumis susisieksime artimiausiu metu."}
+              </DialogDescription>
+            </DialogHeader>
+            <Button className="mt-6" onClick={handleClose} data-testid="button-thank-you-close">
+              {thankYouContent?.ctaLabelLt || "Uždaryti"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Gauti pasiūlymą</DialogTitle>
@@ -275,7 +304,7 @@ export function LeadModal({
               <Button
                 type="button"
                 variant="outline"
-                onClick={onClose}
+                onClick={handleClose}
                 data-testid="button-lead-cancel"
               >
                 Atšaukti

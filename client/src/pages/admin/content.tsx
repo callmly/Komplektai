@@ -18,6 +18,7 @@ const contentKeys = [
   { key: "hero", title: "Hero sekcija", description: "Pagrindinis skyrius" },
   { key: "contact", title: "Kontaktai", description: "Kontaktinė informacija" },
   { key: "footer", title: "Poraštė", description: "Apatinis skyrius" },
+  { key: "thankYou", title: "Padėka", description: "Pranešimas po užklausos pateikimo" },
 ];
 
 export default function AdminContent() {

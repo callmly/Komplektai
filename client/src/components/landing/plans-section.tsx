@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Check, ChevronDown, Minus, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,18 +102,6 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan, optionGroups, options, planOptionGroups, onGetQuote, isExpanded, onToggleExpand }: PlanCardProps) {
-  const [selectedOptions, setSelectedOptions] = useState<Map<number, number>>(
-    () => {
-      const initial = new Map<number, number>();
-      options.forEach((opt) => {
-        if (opt.isDefault) {
-          initial.set(opt.id, opt.defaultQty || 1);
-        }
-      });
-      return initial;
-    }
-  );
-
   const planSpecificGroupIds = useMemo(() => {
     const ids = planOptionGroups
       .filter((pog) => pog.planId === plan.id)
@@ -127,6 +115,40 @@ function PlanCard({ plan, optionGroups, options, planOptionGroups, onGetQuote, i
     }
     return optionGroups.filter((g) => planSpecificGroupIds.includes(g.id));
   }, [optionGroups, planSpecificGroupIds]);
+
+  const allowedGroupIds = useMemo(() => {
+    return new Set(filteredOptionGroups.map((g) => g.id));
+  }, [filteredOptionGroups]);
+
+  const [selectedOptions, setSelectedOptions] = useState<Map<number, number>>(
+    () => {
+      const initial = new Map<number, number>();
+      options.forEach((opt) => {
+        if (opt.isDefault && allowedGroupIds.has(opt.groupId)) {
+          initial.set(opt.id, opt.defaultQty || 1);
+        }
+      });
+      return initial;
+    }
+  );
+
+  useEffect(() => {
+    setSelectedOptions((prev) => {
+      const newMap = new Map<number, number>();
+      prev.forEach((qty, optId) => {
+        const option = options.find((o) => o.id === optId);
+        if (option && allowedGroupIds.has(option.groupId)) {
+          newMap.set(optId, qty);
+        }
+      });
+      options.forEach((opt) => {
+        if (opt.isDefault && allowedGroupIds.has(opt.groupId) && !newMap.has(opt.id)) {
+          newMap.set(opt.id, opt.defaultQty || 1);
+        }
+      });
+      return newMap;
+    });
+  }, [allowedGroupIds, options]);
 
   const quantityGroups = filteredOptionGroups.filter((g) => g.typeLt === "quantity");
   const switchGroups = filteredOptionGroups.filter((g) => g.typeLt === "switch");

@@ -1,6 +1,14 @@
-import { Home } from "lucide-react";
+import { useState } from "react";
+import { Home, Menu, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { SiteContent, MenuLink } from "@shared/schema";
 
 interface HeaderProps {
@@ -8,6 +16,8 @@ interface HeaderProps {
 }
 
 export function Header({ content }: HeaderProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
   const { data: menuLinks = [] } = useQuery<MenuLink[]>({
     queryKey: ["/api/menu-links"],
   });
@@ -21,6 +31,7 @@ export function Header({ content }: HeaderProps) {
     } else if (link.targetType === "url") {
       window.open(link.targetValue, "_blank");
     }
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -36,19 +47,53 @@ export function Header({ content }: HeaderProps) {
         </div>
         
         {menuLinks.length > 0 && (
-          <nav className="hidden md:flex items-center gap-2">
-            {menuLinks.map((link) => (
-              <Button
-                key={link.id}
-                variant="ghost"
-                className="text-[14px]"
-                onClick={() => handleNavClick(link)}
-                data-testid={`menu-link-${link.id}`}
-              >
-                {link.labelLt}
-              </Button>
-            ))}
-          </nav>
+          <>
+            <nav className="hidden md:flex items-center gap-2">
+              {menuLinks.map((link) => (
+                <Button
+                  key={link.id}
+                  variant="ghost"
+                  className="text-[14px]"
+                  onClick={() => handleNavClick(link)}
+                  data-testid={`menu-link-${link.id}`}
+                >
+                  {link.labelLt}
+                </Button>
+              ))}
+            </nav>
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  data-testid="button-mobile-menu"
+                >
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Atidaryti meniu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72">
+                <SheetHeader>
+                  <SheetTitle className="text-left">Meniu</SheetTitle>
+                </SheetHeader>
+                <nav className="mt-6 flex flex-col gap-2">
+                  {menuLinks.map((link) => (
+                    <Button
+                      key={link.id}
+                      variant="ghost"
+                      className="justify-start text-base"
+                      onClick={() => handleNavClick(link)}
+                      data-testid={`mobile-menu-link-${link.id}`}
+                    >
+                      {link.labelLt}
+                    </Button>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </>
         )}
       </div>
     </header>

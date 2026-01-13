@@ -253,3 +253,23 @@ export const leadFormSchema = z.object({
 });
 
 export type LeadFormData = z.infer<typeof leadFormSchema>;
+
+// ============ SEO SETTINGS ============
+export const seoSettings = pgTable("seo_settings", {
+  id: serial("id").primaryKey(),
+  metaTitle: varchar("meta_title", { length: 200 }),
+  metaDescription: text("meta_description"),
+  metaKeywords: text("meta_keywords"),
+  ogTitle: varchar("og_title", { length: 200 }),
+  ogDescription: text("og_description"),
+  ogImage: text("og_image"),
+  googleAnalyticsId: varchar("google_analytics_id", { length: 50 }),
+  googleAnalyticsScript: text("google_analytics_script"),
+  customHeadCode: text("custom_head_code"),
+  robotsTxt: text("robots_txt"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertSeoSettingsSchema = createInsertSchema(seoSettings).omit({ id: true, updatedAt: true });
+export type InsertSeoSettings = z.infer<typeof insertSeoSettingsSchema>;
+export type SeoSettings = typeof seoSettings.$inferSelect;

@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, registerAuthRoutes } from "./replit_integrations/auth";
 import { sendLeadEmails } from "./email";
-import { leadFormSchema, insertContentBlockSchema, insertMenuLinkSchema, type SelectedOptionData } from "@shared/schema";
+import { leadFormSchema, insertContentBlockSchema, insertMenuLinkSchema, insertSeoSettingsSchema, type SelectedOptionData } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(
@@ -506,6 +506,100 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting menu link:", error);
       res.status(500).json({ error: "Failed to delete menu link" });
+    }
+  });
+
+  // ========== SEO SETTINGS ==========
+
+  // Public: get SEO settings for frontend meta tags
+  app.get("/api/seo-settings", async (req, res) => {
+    try {
+      const settings = await storage.getSeoSettings();
+      res.json(settings || {});
+    } catch (error) {
+      console.error("Error fetching SEO settings:", error);
+      res.status(500).json({ error: "Failed to fetch SEO settings" });
+    }
+  });
+
+  // Admin: get SEO settings
+  app.get("/api/admin/seo-settings", isAuthenticated, async (req, res) => {
+    try {
+      const settings = await storage.getSeoSettings();
+      res.json(settings || {});
+    } catch (error) {
+      console.error("Error fetching SEO settings:", error);
+      res.status(500).json({ error: "Failed to fetch SEO settings" });
+    }
+  });
+
+  // Admin: update SEO settings
+  app.put("/api/admin/seo-settings", isAuthenticated, async (req, res) => {
+    try {
+      const parsed = insertSeoSettingsSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid data", details: parsed.error.errors });
+      }
+      const settings = await storage.upsertSeoSettings(parsed.data);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error updating SEO settings:", error);
+      res.status(500).json({ error: "Failed to update SEO settings" });
+    }
+  });
+
+  // ========== SITEMAP & ROBOTS ==========
+
+  // Generate sitemap.xml
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const contentBlocks = await storage.getActiveContentBlocks();
+      
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      
+      // Homepage
+      xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+      
+      // Section anchors
+      xml += `  <url>\n    <loc>${baseUrl}/#plans</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      xml += `  <url>\n    <loc>${baseUrl}/#features</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      
+      // Content block anchors
+      for (const block of contentBlocks) {
+        if (block.slug) {
+          xml += `  <url>\n    <loc>${baseUrl}/#${block.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+        }
+      }
+      
+      xml += '</urlset>';
+      
+      res.set("Content-Type", "application/xml");
+      res.send(xml);
+    } catch (error) {
+      console.error("Error generating sitemap:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  // Generate robots.txt
+  app.get("/robots.txt", async (req, res) => {
+    try {
+      const settings = await storage.getSeoSettings();
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      
+      let robotsTxt = settings?.robotsTxt;
+      
+      if (!robotsTxt) {
+        robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: ${baseUrl}/sitemap.xml`;
+      }
+      
+      res.set("Content-Type", "text/plain");
+      res.send(robotsTxt);
+    } catch (error) {
+      console.error("Error generating robots.txt:", error);
+      res.status(500).send("Error generating robots.txt");
     }
   });
 

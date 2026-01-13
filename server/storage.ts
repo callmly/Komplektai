@@ -12,6 +12,7 @@ import {
   leads,
   contentBlocks,
   menuLinks,
+  seoSettings,
   type Plan,
   type InsertPlan,
   type OptionGroup,
@@ -34,6 +35,8 @@ import {
   type InsertContentBlock,
   type MenuLink,
   type InsertMenuLink,
+  type SeoSettings,
+  type InsertSeoSettings,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -104,6 +107,10 @@ export interface IStorage {
   createMenuLink(link: InsertMenuLink): Promise<MenuLink>;
   updateMenuLink(id: number, link: Partial<InsertMenuLink>): Promise<MenuLink | undefined>;
   deleteMenuLink(id: number): Promise<void>;
+
+  // SEO Settings
+  getSeoSettings(): Promise<SeoSettings | undefined>;
+  upsertSeoSettings(settings: InsertSeoSettings): Promise<SeoSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -367,6 +374,28 @@ export class DatabaseStorage implements IStorage {
 
   async deleteMenuLink(id: number): Promise<void> {
     await db.delete(menuLinks).where(eq(menuLinks.id, id));
+  }
+
+  // SEO Settings
+  async getSeoSettings(): Promise<SeoSettings | undefined> {
+    const [settings] = await db.select().from(seoSettings).limit(1);
+    return settings;
+  }
+
+  async upsertSeoSettings(settings: InsertSeoSettings): Promise<SeoSettings> {
+    const existing = await this.getSeoSettings();
+
+    if (existing) {
+      const [updated] = await db
+        .update(seoSettings)
+        .set({ ...settings, updatedAt: new Date() })
+        .where(eq(seoSettings.id, existing.id))
+        .returning();
+      return updated;
+    }
+
+    const [newSettings] = await db.insert(seoSettings).values(settings).returning();
+    return newSettings;
   }
 }
 

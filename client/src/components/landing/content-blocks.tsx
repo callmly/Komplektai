@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatedSection } from "@/components/ui/animated-section";
 import type { ContentBlock } from "@shared/schema";
 
 export function ContentBlocksSection() {
@@ -30,7 +31,7 @@ export function ContentBlocksSection() {
 
   return (
     <>
-      {blocks.map((block) => (
+      {blocks.map((block, index) => (
         <section 
           key={block.id} 
           id={block.slug || `block-${block.id}`}
@@ -38,23 +39,25 @@ export function ContentBlocksSection() {
           data-testid={`content-block-${block.id}`}
         >
           <div className="container mx-auto px-4 lg:px-8">
-            <article className="space-y-4">
-              {block.titleLt && (
-                <h2 className="text-2xl font-bold text-foreground">
-                  {block.titleLt}
-                </h2>
-              )}
-              {block.isHtml ? (
-                <div
-                  className="prose prose-slate dark:prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: block.contentLt ?? "" }}
-                />
-              ) : (
-                <div className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                  {block.contentLt}
-                </div>
-              )}
-            </article>
+            <AnimatedSection delay={index * 80}>
+              <article className="space-y-4">
+                {block.titleLt && (
+                  <h2 className="text-2xl font-bold text-foreground">
+                    {block.titleLt}
+                  </h2>
+                )}
+                {block.isHtml ? (
+                  <div
+                    className="prose prose-slate dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: block.contentLt ?? "" }}
+                  />
+                ) : (
+                  <div className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                    {block.contentLt}
+                  </div>
+                )}
+              </article>
+            </AnimatedSection>
           </div>
         </section>
       ))}

@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { AnimatedSection } from "@/components/ui/animated-section";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "./info-tooltip";
 import type { Plan, FeatureGroup, Feature, PlanFeature } from "@shared/schema";
@@ -70,7 +71,7 @@ export function FeatureComparison({
   return (
     <section id="features" className="border-t bg-muted/30 py-20 lg:py-28">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="mb-12 text-center">
+        <AnimatedSection className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight lg:text-4xl">
             Palyginti visas funkcijas
           </h2>
@@ -78,10 +79,10 @@ export function FeatureComparison({
             Išsami paketų palyginimo lentelė padės pasirinkti tinkamiausią
             sprendimą jūsų namams.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Desktop Table */}
-        <div className="hidden overflow-hidden rounded-xl border bg-background lg:block">
+        <AnimatedSection delay={100} className="hidden overflow-hidden rounded-xl border bg-background lg:block">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -173,10 +174,10 @@ export function FeatureComparison({
               </tbody>
             </table>
           </div>
-        </div>
+        </AnimatedSection>
 
         {/* Mobile Accordion */}
-        <div className="lg:hidden">
+        <AnimatedSection delay={100} className="lg:hidden">
           <Accordion type="single" collapsible className="space-y-4">
             {sortedGroups.map((group) => (
               <AccordionItem
@@ -251,7 +252,7 @@ export function FeatureComparison({
               </AccordionItem>
             ))}
           </Accordion>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

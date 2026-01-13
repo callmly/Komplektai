@@ -1,5 +1,6 @@
 import { ArrowDown, Shield, Zap, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AnimatedSection, AnimatedItem } from "@/components/ui/animated-section";
 import type { SiteContent } from "@shared/schema";
 
 interface HeroSectionProps {
@@ -17,53 +18,67 @@ export function HeroSection({ content }: HeroSectionProps) {
       
       <div className="container relative mx-auto px-4 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-2 text-sm font-medium backdrop-blur">
-            <Shield className="h-4 w-4 text-primary" />
-            <span>Sertifikuoti KNX specialistai</span>
-          </div>
+          <AnimatedSection>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-2 text-sm font-medium backdrop-blur">
+              <Shield className="h-4 w-4 text-primary" />
+              <span>Sertifikuoti KNX specialistai</span>
+            </div>
+          </AnimatedSection>
           
-          <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            {content?.headingLt || (
-              <>
-                Išmanus namas su{" "}
-                <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                  KNX technologija
-                </span>
-              </>
-            )}
-          </h1>
+          <AnimatedSection delay={100}>
+            <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              {content?.headingLt || (
+                <>
+                  Išmanus namas su{" "}
+                  <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                    KNX technologija
+                  </span>
+                </>
+              )}
+            </h1>
+          </AnimatedSection>
           
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground lg:text-xl">
-            {content?.bodyLt ||
-              "Automatizuokite savo namus su pasauliniu standartu. Valdykite apšvietimą, šildymą, žaliuzes ir kitus prietaisus iš vienos sistemos."}
-          </p>
+          <AnimatedSection delay={200}>
+            <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+              {content?.bodyLt ||
+                "Automatizuokite savo namus su pasauliniu standartu. Valdykite apšvietimą, šildymą, žaliuzes ir kitus prietaisus iš vienos sistemos."}
+            </p>
+          </AnimatedSection>
           
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" onClick={scrollToPlans} className="gap-2" data-testid="button-get-started">
-              {content?.ctaLabelLt || "Pasirinkti planą"}
-              <ArrowDown className="h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="outline" asChild data-testid="button-learn-more">
-              <a href="#features">Sužinoti daugiau</a>
-            </Button>
-          </div>
+          <AnimatedSection delay={300}>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button size="lg" onClick={scrollToPlans} className="gap-2" data-testid="button-get-started">
+                {content?.ctaLabelLt || "Pasirinkti planą"}
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+              <Button size="lg" variant="outline" asChild data-testid="button-learn-more">
+                <a href="#features">Sužinoti daugiau</a>
+              </Button>
+            </div>
+          </AnimatedSection>
           
           <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <TrustBadge
-              icon={<Zap className="h-5 w-5" />}
-              title="Greitas montavimas"
-              description="Įdiegimas per 1-3 dienas"
-            />
-            <TrustBadge
-              icon={<Shield className="h-5 w-5" />}
-              title="5 metų garantija"
-              description="Pilna techninė pagalba"
-            />
-            <TrustBadge
-              icon={<Wifi className="h-5 w-5" />}
-              title="Nuotolinis valdymas"
-              description="Valdykite iš bet kur"
-            />
+            <AnimatedItem delay={400}>
+              <TrustBadge
+                icon={<Zap className="h-5 w-5" />}
+                title="Greitas montavimas"
+                description="Įdiegimas per 1-3 dienas"
+              />
+            </AnimatedItem>
+            <AnimatedItem delay={480}>
+              <TrustBadge
+                icon={<Shield className="h-5 w-5" />}
+                title="5 metų garantija"
+                description="Pilna techninė pagalba"
+              />
+            </AnimatedItem>
+            <AnimatedItem delay={560}>
+              <TrustBadge
+                icon={<Wifi className="h-5 w-5" />}
+                title="Nuotolinis valdymas"
+                description="Valdykite iš bet kur"
+              />
+            </AnimatedItem>
           </div>
         </div>
       </div>

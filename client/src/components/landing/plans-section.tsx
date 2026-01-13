@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatedSection, AnimatedItem } from "@/components/ui/animated-section";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "./info-tooltip";
 import type { Plan, OptionGroup, Option } from "@shared/schema";
@@ -58,7 +59,7 @@ export function PlansSection({
   return (
     <section id="plans" className="py-20 lg:py-28">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="mb-12 text-center">
+        <AnimatedSection className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight lg:text-4xl">
             Pasirinkite savo planą
           </h2>
@@ -66,22 +67,23 @@ export function PlansSection({
             Trys paketai pritaikyti skirtingiems poreikiams. Kiekvienas paketas
             gali būti individualizuotas pagal jūsų namus.
           </p>
-        </div>
+        </AnimatedSection>
 
         <div className={cn(
           "grid gap-8 md:grid-cols-3",
           expandedPlanId !== null ? "items-start" : "items-stretch"
         )}>
-          {sortedPlans.map((plan) => (
-            <PlanCard
-              key={plan.id}
-              plan={plan}
-              optionGroups={optionGroups}
-              options={options}
-              onGetQuote={onGetQuote}
-              isExpanded={expandedPlanId === plan.id}
-              onToggleExpand={() => toggleExpanded(plan.id)}
-            />
+          {sortedPlans.map((plan, index) => (
+            <AnimatedItem key={plan.id} delay={index * 80}>
+              <PlanCard
+                plan={plan}
+                optionGroups={optionGroups}
+                options={options}
+                onGetQuote={onGetQuote}
+                isExpanded={expandedPlanId === plan.id}
+                onToggleExpand={() => toggleExpanded(plan.id)}
+              />
+            </AnimatedItem>
           ))}
         </div>
       </div>

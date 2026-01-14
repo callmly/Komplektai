@@ -119,7 +119,7 @@ function TrustBadge({
   description: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-xl border bg-background/50 p-6 backdrop-blur transition-colors hover-elevate">
+    <div className="flex flex-col items-center gap-2 rounded-xl border p-6 backdrop-blur transition-colors hover-elevate bg-[#ffffffcc]">
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
         {icon}
       </div>

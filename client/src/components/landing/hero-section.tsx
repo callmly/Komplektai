@@ -72,7 +72,7 @@ export function HeroSection({ content, particlesSettings }: HeroSectionProps) {
                 {content?.ctaLabelLt || "Pasirinkti planą"}
                 <ArrowDown className="h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" asChild data-testid="button-learn-more">
+              <Button size="lg" variant="outline" className="bg-[#ffffffcc]" asChild data-testid="button-learn-more">
                 <a href="#features">Sužinoti daugiau</a>
               </Button>
             </div>

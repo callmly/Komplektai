@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import type { CustomPage } from "@shared/schema";
 
 export default function CustomPageView() {
@@ -52,14 +51,13 @@ export default function CustomPageView() {
       
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto flex h-14 items-center justify-between px-4">
+          <div className="container mx-auto flex h-14 items-center px-4">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Grįžti
               </Link>
             </Button>
-            <ThemeToggle />
           </div>
         </header>
 

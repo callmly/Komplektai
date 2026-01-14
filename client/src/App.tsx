@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import LandingPage from "@/pages/landing";
 import AdminLayout from "@/pages/admin/layout";
+import CustomPageView from "@/pages/custom-page";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/" component={LandingPage} />
       <Route path="/admin" component={AdminLayout} />
       <Route path="/admin/:rest*" component={AdminLayout} />
+      <Route path="/:slug" component={CustomPageView} />
       <Route component={NotFound} />
     </Switch>
   );

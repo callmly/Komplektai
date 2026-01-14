@@ -1,5 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { Home, Mail, MapPin, Phone } from "lucide-react";
-import type { SiteContent } from "@shared/schema";
+import type { SiteContent, FooterLink } from "@shared/schema";
 
 interface FooterProps {
   content?: SiteContent;
@@ -7,6 +8,12 @@ interface FooterProps {
 }
 
 export function Footer({ content, contactContent }: FooterProps) {
+  const { data: footerLinks = [] } = useQuery<FooterLink[]>({
+    queryKey: ["/api/footer-links"],
+  });
+
+  const sortedLinks = [...footerLinks].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
   return (
     <footer className="border-t bg-muted/30 py-12">
       <div className="container mx-auto px-4 lg:px-8">
@@ -92,13 +99,19 @@ export function Footer({ content, contactContent }: FooterProps) {
           <p>
             © {new Date().getFullYear()} KNX Smart Home. Visos teisės saugomos.
           </p>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-foreground">
-              Privatumo politika
-            </a>
-            <a href="#" className="hover:text-foreground">
-              Naudojimo sąlygos
-            </a>
+          <div className="flex flex-wrap gap-4">
+            {sortedLinks.map((link) => (
+              <a 
+                key={link.id}
+                href={link.url} 
+                className="hover:text-foreground"
+                target={link.openInNewTab ? "_blank" : undefined}
+                rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                data-testid={`footer-link-${link.id}`}
+              >
+                {link.labelLt}
+              </a>
+            ))}
           </div>
         </div>
       </div>

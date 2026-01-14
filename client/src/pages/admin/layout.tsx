@@ -41,6 +41,8 @@ import AdminFeatures from "./features";
 import AdminContent from "./content";
 import AdminContentBlocks from "./content-blocks";
 import AdminMenuLinks from "./menu-links";
+import AdminFooterLinks from "./footer-links";
+import AdminPages from "./pages";
 import AdminLeads from "./leads";
 import AdminSeo from "./seo";
 import AdminParticles from "./particles";
@@ -53,6 +55,8 @@ const menuItems = [
   { title: "Svetainės turinys", icon: FileText, path: "/admin/content" },
   { title: "Turinio blokai", icon: Blocks, path: "/admin/content-blocks" },
   { title: "Meniu nuorodos", icon: Menu, path: "/admin/menu-links" },
+  { title: "Footer nuorodos", icon: Menu, path: "/admin/footer-links" },
+  { title: "Puslapiai", icon: FileText, path: "/admin/pages" },
   { title: "SEO nustatymai", icon: Search, path: "/admin/seo" },
   { title: "Dalelės", icon: Grid3x3, path: "/admin/particles" },
   { title: "Užklausos", icon: Users, path: "/admin/leads" },
@@ -183,6 +187,8 @@ export default function AdminLayout() {
               <Route path="/admin/content" component={AdminContent} />
               <Route path="/admin/content-blocks" component={AdminContentBlocks} />
               <Route path="/admin/menu-links" component={AdminMenuLinks} />
+              <Route path="/admin/footer-links" component={AdminFooterLinks} />
+              <Route path="/admin/pages" component={AdminPages} />
               <Route path="/admin/seo" component={AdminSeo} />
               <Route path="/admin/particles" component={AdminParticles} />
               <Route path="/admin/leads" component={AdminLeads} />
@@ -204,6 +210,8 @@ function Breadcrumb({ location }: { location: string }) {
     content: "Svetainės turinys",
     "content-blocks": "Turinio blokai",
     "menu-links": "Meniu nuorodos",
+    "footer-links": "Footer nuorodos",
+    pages: "Puslapiai",
     seo: "SEO nustatymai",
     particles: "Dalelės",
     leads: "Užklausos",

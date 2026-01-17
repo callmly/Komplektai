@@ -1,42 +1,31 @@
-# =========================
-# Build stage
-# =========================
-FROM node:20-alpine AS build
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-# Dažnai prireikia bash (jei build scriptas jo reikalauja)
-RUN apk add --no-cache bash
-
+# Install dependencies
 COPY package*.json ./
 RUN npm ci
 
+# Copy source code
 COPY . .
 
-# Svarbiausia dalis: build output -> build.log, o jei krenta, atspausdinam build.log į Coolify logus
-RUN /bin/sh -lc 'set -e; \
-  npm run build > /tmp/build.log 2>&1 || ( \
-    echo "----- npm run build FAILED -----"; \
-    cat /tmp/build.log; \
-    echo "----- node/npm versions -----"; \
-    node -v; npm -v; \
-    echo "----- scripts -----"; \
-    node -e "console.log(require(\"./package.json\").scripts)"; \
-    echo "----- node_modules/.bin -----"; \
-    ls -la node_modules/.bin || true; \
-    exit 1 )'
+# Build the application
+RUN npm run build
 
-# =========================
 # Production stage
-# =========================
-FROM node:20-alpine AS production
+FROM node:20-alpine AS runner
+
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
-COPY --from=build /app/dist ./dist
+# Copy built files
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/drizzle.config.ts ./
 
 EXPOSE 5000
+
+# Start the server
 CMD ["node", "dist/index.js"]

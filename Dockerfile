@@ -4,14 +4,23 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Install dependencies (including devDependencies, needed for build tools like tsc/vite/etc.)
+# Alpine dažnai neturi bash; jei build skriptas kviečia bash, gausi exit 127
+RUN apk add --no-cache bash
+
 COPY package*.json ./
+# Build įrankiai dažniausiai yra devDependencies (vite/tsc/webpack/...)
 RUN npm ci
 
-# Copy source and build
 COPY . .
-RUN npm run build
 
+# Paleidžiam build su aiškesniu output; jei kris, parodys kas "not found"
+RUN /bin/sh -lc 'set -eux; npm run build || ( \
+  echo "---- BUILD DEBUG ----"; \
+  echo "node:"; node -v; \
+  echo "npm:"; npm -v; \
+  echo "scripts:"; node -e "console.log(require(\"./package.json\").scripts)"; \
+  echo "bin tools:"; ls -la node_modules/.bin || true; \
+  exit 1 )'
 
 # =========================
 # Production stage
@@ -21,19 +30,10 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Install only production dependencies
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Copy build output from build stage
 COPY --from=build /app/dist ./dist
 
-# If your app needs other runtime assets, uncomment and adapt:
-# COPY --from=build /app/public ./public
-# COPY --from=build /app/views ./views
-# COPY --from=build /app/prisma ./prisma
-
 EXPOSE 5000
-
-# Start the server
 CMD ["node", "dist/index.js"]

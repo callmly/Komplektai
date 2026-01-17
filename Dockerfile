@@ -27,6 +27,11 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 
+RUN echo "Starting build..." && \
+    npm run build && \
+    echo "Build completed!" && \
+    ls -la dist/
+
 EXPOSE 5000
 
 # Start the server

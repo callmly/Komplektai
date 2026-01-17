@@ -1,31 +1,30 @@
-FROM node:20-alpine AS builder
-
+# ---- Build stage ----
+FROM node:20-alpine AS build
 WORKDIR /app
 
-# Install dependencies
+# 1) Install deps (incl. dev deps for build tools)
 COPY package*.json ./
 RUN npm ci
 
-# Copy source code
+# 2) Copy source and build
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS runner
-
+# ---- Production stage ----
+FROM node:20-alpine AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy built files
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/drizzle.config.ts ./
+# Install only production deps
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy built output from build stage
+COPY --from=build /app/dist ./dist
+
+# If you need other runtime files, copy them too (example):
+# COPY --from=build /app/public ./public
 
 EXPOSE 5000
-
-# Start the server
 CMD ["node", "dist/index.js"]
